@@ -61,7 +61,11 @@ export default function LoginPage() {
           className={`btn btn-primary w-full ${loading ? "loading" : ""}`}
           disabled={loading}
         >
-          {loading ? "Loading..." : "Login"}
+          {loading ? (
+            <span className="loading loading-spinner"></span>
+          ) : (
+            "Login"
+          )}
         </button>
 
         <p className="text-sm text-center mt-3">

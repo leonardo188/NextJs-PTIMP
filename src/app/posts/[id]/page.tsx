@@ -5,6 +5,8 @@ import { getPost, deletePost } from "@/lib/posts"
 import { Post } from "@/types/post"
 import { useRequireAuth } from "@/hooks/useRequireAuth"
 import Link from "next/link"
+import LoadingOverlay from "@/components/LoadingOverlay"
+import ErrorModal from "@/components/ErrorModal"
 
 export default function PostDetailPage() {
   useRequireAuth()
@@ -12,7 +14,9 @@ export default function PostDetailPage() {
   const router = useRouter()
   const [post, setPost] = useState<Post | null>(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState("")
+  const [deleting, setDeleting] = useState(false)
+  const [errorModal, setErrorModal] = useState(false)
+  const [errorMsg, setErrorMsg] = useState("")
 
   useEffect(() => {
     const load = async () => {
@@ -20,7 +24,8 @@ export default function PostDetailPage() {
         const res = await getPost(Number(id))
         setPost(res.data)
       } catch (err: any) {
-        setError(err.message)
+        setErrorMsg("Gagal memuat post.")
+        setErrorModal(true)
       } finally {
         setLoading(false)
       }
@@ -29,23 +34,36 @@ export default function PostDetailPage() {
   }, [id])
 
   const handleDelete = async () => {
-    if (confirm("Yakin ingin menghapus post ini?")) {
-      try {
-        await deletePost(Number(id))
-        router.push("/")
-      } catch (err: any) {
-        alert("Gagal menghapus post.")
+    if (!confirm("Yakin ingin menghapus post ini?")) return
+    setDeleting(true)
+    try {
+      await deletePost(Number(id))
+      router.push("/")
+    } catch (err: any) {
+      if (err.message?.includes("Unauthorized")) {
+        setErrorMsg("Kamu tidak memiliki izin untuk menghapus post ini.")
+      } else {
+        setErrorMsg("Terjadi kesalahan saat menghapus post.")
       }
+      setErrorModal(true)
+    } finally {
+      setDeleting(false)
     }
   }
 
-  if (loading) return <p>Loading...</p>
-  if (error || !post)
-    return <p className="text-red-500">Gagal memuat post: {error}</p>
+  if (loading) return <LoadingOverlay text="Memuat post..." />
+  if (!post) return null
 
   return (
-    <div className="max-w-3xl mx-auto">
-      <div className="flex justify-between items-center mb-4">
+    <div className="max-w-3xl mx-auto relative">
+      {deleting && <LoadingOverlay text="Menghapus post..." />}
+      <ErrorModal
+        open={errorModal}
+        message={errorMsg}
+        onClose={() => setErrorModal(false)}
+      />
+
+      <div className="flex justify-between items-center mb-4 py-8">
         <h1 className="text-3xl font-bold">{post.title}</h1>
         <div className="flex gap-2">
           <Link href={`/posts/${id}/edit`} className="btn btn-outline btn-sm">
@@ -56,6 +74,7 @@ export default function PostDetailPage() {
           </button>
         </div>
       </div>
+
       <p className="text-gray-700 whitespace-pre-wrap">{post.content}</p>
     </div>
   )

@@ -16,7 +16,9 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
 
@@ -47,7 +49,7 @@ export default function RegisterPage() {
           label="Nama Lengkap"
           name="name"
           value={form.name}
-          onChange={() => handleChange}
+          onChange={handleChange}
           placeholder="John Doe"
           required
         />
@@ -57,7 +59,7 @@ export default function RegisterPage() {
           type="email"
           name="email"
           value={form.email}
-          onChange={() => handleChange}
+          onChange={handleChange}
           placeholder="john@example.com"
           required
         />
@@ -67,7 +69,7 @@ export default function RegisterPage() {
           type="password"
           name="password"
           value={form.password}
-          onChange={() => handleChange}
+          onChange={handleChange}
           placeholder="********"
           required
         />
@@ -77,7 +79,7 @@ export default function RegisterPage() {
           type="password"
           name="password_confirmation"
           value={form.password_confirmation}
-          onChange={() => handleChange}
+          onChange={handleChange}
           placeholder="********"
           required
         />

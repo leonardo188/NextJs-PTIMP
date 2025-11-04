@@ -31,7 +31,7 @@ export default function NewPostPage() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto">
+    <div className="max-w-3xl mx-auto py-8">
       <h1 className="text-2xl font-bold mb-6">Buat Post Baru</h1>
       <form onSubmit={handleSubmit}>
         <FormInput
@@ -58,7 +58,7 @@ export default function NewPostPage() {
         )}
         <button
           type="submit"
-          className={`btn btn-primary ${loading ? "loading" : ""}`}
+          className={`w-full btn btn-primary ${loading ? "loading" : ""}`}
         >
           Simpan
         </button>

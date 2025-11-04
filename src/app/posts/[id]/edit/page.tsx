@@ -4,6 +4,8 @@ import { useParams, useRouter } from "next/navigation"
 import { getPost, updatePost } from "@/lib/posts"
 import { useRequireAuth } from "@/hooks/useRequireAuth"
 import FormInput from "@/components/FormInput"
+import LoadingOverlay from "@/components/LoadingOverlay"
+import ErrorModal from "@/components/ErrorModal"
 
 export default function EditPostPage() {
   useRequireAuth()
@@ -11,7 +13,9 @@ export default function EditPostPage() {
   const router = useRouter()
   const [form, setForm] = useState({ title: "", content: "" })
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState("")
+  const [submitting, setSubmitting] = useState(false)
+  const [errorModal, setErrorModal] = useState(false)
+  const [errorMsg, setErrorMsg] = useState("")
 
   useEffect(() => {
     const load = async () => {
@@ -21,8 +25,9 @@ export default function EditPostPage() {
           title: res.data.title,
           content: res.data.content,
         })
-      } catch (err: any) {
-        setError("Gagal memuat data post.")
+      } catch {
+        setErrorMsg("Gagal memuat data post.")
+        setErrorModal(true)
       } finally {
         setLoading(false)
       }
@@ -36,19 +41,33 @@ export default function EditPostPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setSubmitting(true)
     try {
       await updatePost(Number(id), form)
       router.push(`/posts/${id}`)
     } catch (err: any) {
-      alert("Gagal memperbarui post.")
+      if (err.message?.includes("Unauthorized")) {
+        setErrorMsg("Kamu tidak memiliki izin untuk mengedit post ini.")
+      } else {
+        setErrorMsg("Terjadi kesalahan saat memperbarui post.")
+      }
+      setErrorModal(true)
+    } finally {
+      setSubmitting(false)
     }
   }
 
-  if (loading) return <p>Loading...</p>
+  if (loading) return <LoadingOverlay text="Memuat data post..." />
 
   return (
     <div className="max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Edit Post</h1>
+      <ErrorModal
+        open={errorModal}
+        message={errorMsg}
+        onClose={() => setErrorModal(false)}
+      />
+
+      <h1 className="text-2xl font-bold mb-6 py-8">Edit Post</h1>
       <form onSubmit={handleSubmit}>
         <FormInput
           label="Judul"
@@ -65,11 +84,13 @@ export default function EditPostPage() {
           onChange={handleChange}
           required
         />
-        {error && (
-          <div className="alert alert-error text-sm mb-3 py-2">{error}</div>
-        )}
-        <button type="submit" className="btn btn-primary">
-          Simpan Perubahan
+
+        <button
+          type="submit"
+          className={`w-full btn btn-primary ${submitting ? "loading" : ""}`}
+          disabled={submitting}
+        >
+          {submitting ? "Menyimpan..." : "Simpan Perubahan"}
         </button>
       </form>
     </div>

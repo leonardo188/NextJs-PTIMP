@@ -31,7 +31,7 @@ export default function FormInput({
           onChange={onChange}
           placeholder={placeholder}
           required={required}
-          className="textarea textarea-bordered h-32"
+          className="textarea textarea-bordered h-32 w-full"
         ></textarea>
       ) : (
         <input

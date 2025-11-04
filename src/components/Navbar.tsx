@@ -13,40 +13,43 @@ export default function Navbar() {
   }
 
   return (
-    <div className="navbar bg-base-100 shadow-md px-6 sticky top-0 z-50">
+    <nav className="navbar sticky top-0 z-50 bg-base-100 backdrop-blur-lg border-b border-base-200 shadow-sm px-6">
       <div className="flex-1">
-        <Link href="/" className="btn btn-ghost normal-case text-xl">
+        <Link
+          href="/"
+          className="text-xl font-bold bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent"
+        >
           Blog App
         </Link>
       </div>
 
-      <div className="flex-none gap-2">
-        <ul className="menu menu-horizontal px-1">
-          <li>
-            <Link href="/">Posts</Link>
-          </li>
-          {token ? (
-            <>
-              <li>
-                <Link href="/posts/new" className="btn btn-primary btn-sm">
-                  + New Post
-                </Link>
-              </li>
-              <li>
-                <button onClick={handleLogout} className="btn btn-error btn-sm">
-                  Logout
-                </button>
-              </li>
-            </>
-          ) : (
-            <li>
-              <Link href="/login" className="btn btn-primary btn-sm">
-                Login
-              </Link>
-            </li>
-          )}
-        </ul>
+      <div className="flex gap-3 items-center justify-between w-1/5">
+        <Link href="/" className="text-sm font-medium text-gray-700 hover:text-primary transition">
+          Posts
+        </Link>
+
+        {token ? (
+          <>
+            <Link
+              href="/posts/new"
+              className="btn btn-sm bg-linear-to-r from-pink-500 to-fuchsia-500 text-white border-none hover:opacity-90 transition"
+            >
+              + New Post
+            </Link>
+
+            <button
+              onClick={handleLogout}
+              className="btn btn-sm bg-linear-to-r from-rose-400 to-orange-400 text-white border-none hover:opacity-90 transition"
+            >
+              Logout
+            </button>
+          </>
+        ) : (
+          <Link href="/login" className="btn btn-sm btn-primary text-white">
+            Login
+          </Link>
+        )}
       </div>
-    </div>
+    </nav>
   )
 }

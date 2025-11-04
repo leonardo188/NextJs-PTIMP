@@ -1,8 +1,7 @@
 "use client"
 import { ReactNode } from "react"
 import { useAuthStore } from "@/store/useAuthStore"
-import Link from "next/link"
-import { useRouter, usePathname } from "next/navigation"
+import { usePathname } from "next/navigation"
 import Navbar from "@/components/Navbar"
 
 export default function MainLayout({ children }: { children: ReactNode }) {
@@ -15,7 +14,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen flex flex-col bg-base-200">
       {shouldShowNavbar && <Navbar />} 
-      <main className="flex-1 p-6">{children}</main>
+      <main className="flex-1">{children}</main>
       {shouldShowNavbar && (
         <footer className="footer footer-center bg-base-300 p-4 text-base-content">
           <aside>
